@@ -1,0 +1,85 @@
+#include <NewPing.h>
+// Motor Pins
+const int LeftMotorForward = 6;
+const int LeftMotorBackward = 7;
+const int RightMotorForward = 4;
+const int RightMotorBackward = 5;
+
+// Ultrasonic Sensor Pins
+const int trigPin = 9;
+const int echoPin = 8;
+
+// Threshold Distance
+const int threshold = 20; // Adjust based on your environment
+
+void setup() {
+  pinMode(LeftMotorForward, OUTPUT);
+  pinMode(LeftMotorBackward, OUTPUT);
+  pinMode(RightMotorForward, OUTPUT);
+  pinMode(RightMotorBackward, OUTPUT);
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  Serial.begin(9600); // For debugging
+}
+
+void loop() {
+  int distance = getDistance();
+  Serial.print("Distance: ");
+  Serial.println(distance);
+
+  if (distance < threshold) {
+    stopMotors();
+    delay(500); // Pause for a moment
+    moveBackward();
+    delay(500);
+    turnRight(); // Default turn direction
+    delay(500);
+  } else {
+    moveForward();
+  }
+}
+
+// Function to measure distance
+int getDistance() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  long duration = pulseIn(echoPin, HIGH);
+  int distance = duration * 0.034 / 2; // Convert to cm
+  return distance;
+}
+
+// Motor Functions
+void moveForward() {
+  digitalWrite(LeftMotorForward, HIGH);
+  digitalWrite(LeftMotorBackward, LOW);
+  digitalWrite(RightMotorForward, HIGH);
+  digitalWrite(RightMotorBackward, LOW);
+}
+
+void moveBackward() {
+  digitalWrite(LeftMotorForward, LOW);
+  digitalWrite(LeftMotorBackward, HIGH);
+  digitalWrite(RightMotorForward, LOW);
+  digitalWrite(RightMotorBackward, HIGH);
+}
+
+void stopMotors() {
+  digitalWrite(LeftMotorForward, LOW);
+  digitalWrite(LeftMotorBackward, LOW);
+  digitalWrite(RightMotorForward, LOW);
+  digitalWrite(RightMotorBackward, LOW);
+}
+
+void turnRight() {
+  digitalWrite(LeftMotorForward, HIGH);
+  digitalWrite(LeftMotorBackward, LOW);
+  digitalWrite(RightMotorForward, LOW);
+  digitalWrite(RightMotorBackward, HIGH);
+}
+
